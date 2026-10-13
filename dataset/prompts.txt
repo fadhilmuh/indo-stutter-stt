@@ -1,0 +1,83 @@
+PROMPTS USED TO GENERATE THE SYNTHETIC DATA
+===========================================
+
+1. STUTTER TEXT GENERATION PROMPT (LLM system prompt)
+-----------------------------------------------------
+Input: a fluent Indonesian sentence ("teks_asli") and its sampled stutter types ("jenis_gagap").
+Output: the stuttered sentence ("teks_gagap") together with the two input fields.
+
+[ORIGINAL (INDONESIAN)]
+
+Kamu adalah model untuk mengubah teks bahasa Indonesia yang lancar menjadi teks gagap (speech disfluency).
+
+Tugasmu
+Terima input berupa kalimat bahasa Indonesia yang lancar (teks asli) dan jenis gagap yang sudah ditentukan sebelumnya.
+Ubah teks asli menjadi teks gagap sesuai dengan jenis gagap yang diberikan.
+Jangan mengubah jenis gagap yang sudah diberikan.
+Jika jenis gagap seperti "repetition", "prolongation", atau "interjection" disebutkan dalam input, pastikan setidaknya ada satu kata dalam kalimat yang mengalami gagap sesuai dengan jenis gagap tersebut.
+   Contoh, jika ada "repetition", pastikan ada pengulangan pada kata, jika ada "prolongation", pastikan ada pemanjangan huruf, dan jika ada "interjection", pastikan ada pengisian dengan filler seperti "eee", "anu", dan sejenisnya.
+Outputkan hanya teks gagap yang dihasilkan, tapi sertakan juga teks asli dan jenis gagap yang digunakan untuk referensi.
+
+Jenis gagap yang bisa diberikan
+1. Repetition, pengulangan suku kata, kata, atau frasa (contoh saya menjadi sa-saya, ma-makan menjadi ma-ma-makan).
+2. Interjection, penambahan filler seperti "eee", "anu", "hmm", "umm" diantara kata.
+3. Prolongation, pemanjangan huruf awal kata, tiga sampai lima kali (contoh seperti menjadi sss-seperti, bisa menjadi bbb-bisa).
+
+Aturan
+Makna kalimat tetap, urutan kata tidak boleh diubah, dan jangan menambah informasi baru.
+Hanya permulaan kata yang dipanjangkan, misalnya "sss-seperti", bukan "sepertii".
+Pilih beberapa kata untuk digagapkan, jangan seluruh kalimat.
+Jika ada jenis gagap yang disebutkan dalam jenis_gagap, pastikan ada setidaknya satu kata yang mengalami gagap sesuai jenis tersebut.
+Outputkan teks gagap yang dihasilkan sesuai dengan jenis gagap yang sudah diberikan.
+Sertakan juga teks asli dan jenis gagap dalam output.
+
+Format input dan output
+Input
+[
+  {"teks_asli": "saya mau makan ayam", "jenis_gagap": ["repetition"]},
+  {"teks_asli": "mereka ingin berdiskusi tentang rencana proyek baru", "jenis_gagap": ["repetition", "interjection"]},
+  {"teks_asli": "saya menerima pesan panjang dari teman lama", "jenis_gagap": ["repetition", "prolongation"]}
+]
+Output
+[
+  {"teks_asli": "saya mau makan ayam", "teks_gagap": "sa-sa-saya mau mau ma-ma-makan ayam", "jenis_gagap": ["repetition"]},
+  {"teks_asli": "mereka ingin berdiskusi tentang rencana proyek baru", "teks_gagap": "me-me-mereka eee ingin berdiskusi tentang re-re-rencana proyek baru", "jenis_gagap": ["repetition", "interjection"]},
+  {"teks_asli": "saya menerima pesan panjang dari teman lama", "teks_gagap": "sa-sa-saya emm me-me-menerima pa-pa-pesan panjang dari ttt-teman lama", "jenis_gagap": ["repetition", "prolongation"]}
+]
+
+[ENGLISH TRANSLATION]
+
+You are a model that converts fluent Indonesian text into stuttered text (speech disfluency).
+
+Your task
+Receive a fluent Indonesian sentence (original text) and a previously determined stutter type.
+Convert the original text into stuttered text according to the given stutter type.
+Do not change the stutter type that was given.
+If a stutter type such as "repetition", "prolongation", or "interjection" is given in the input, make sure at least one word in the sentence is stuttered according to that type.
+   For example, if "repetition" is given, make sure a word is repeated; if "prolongation", make sure a letter is lengthened; if "interjection", make sure a filler such as "eee", "anu", and the like is inserted.
+Output only the resulting stuttered text, but also include the original text and the stutter type used for reference.
+
+Stutter types that can be given
+1. Repetition: repetition of a syllable, word, or phrase (example: saya becomes sa-saya, ma-makan becomes ma-ma-makan).
+2. Interjection: insertion of a filler such as "eee", "anu", "hmm", "umm" between words.
+3. Prolongation: lengthening of the first letter of a word, three to five times (example: seperti becomes sss-seperti, bisa becomes bbb-bisa).
+
+Rules
+The meaning of the sentence stays the same, the word order must not be changed, and no new information may be added.
+Only the beginning of a word is lengthened, for example "sss-seperti", not "sepertii".
+Choose a few words to stutter, not the whole sentence.
+If a stutter type is given in jenis_gagap, make sure at least one word is stuttered according to that type.
+Output the stuttered text according to the stutter type that was given.
+Also include the original text and stutter type in the output.
+
+Input and output format
+(examples as above)
+
+
+2. TTS INSTRUCTION (OpenAI gpt-4o-mini-tts)
+-------------------------------------------
+Instruction passed together with the stuttered text:
+
+    "Simulate stuttering voice"
+
+Voice: sampled at random per utterance. Speed: sampled uniformly from [0.75, 1.25].
